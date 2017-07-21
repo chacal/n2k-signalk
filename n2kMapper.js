@@ -3,7 +3,8 @@ var signalkSchema = require('signalk-schema')
 var through = require('through')
 var debug = require('debug')('signalk:n2k-signalk')
 
-var toDelta = function (n2k, state) {
+var toDelta = function (n2kInput, state) {
+  var n2k = Object.assign({}, n2kInput, {fields: replaceNvFieldsWithNames(n2kInput.fields)})
   try {
     var theMappings = n2kMappings[n2k.pgn]
     var src_state
@@ -177,4 +178,32 @@ exports.toNestedTransformer = function (options) {
     }
   })
   return stream
+}
+
+function replaceNvFieldsWithNames(fields) {
+  if(fields === undefined || fields === null) {
+    return fields
+  }
+
+  var out = {}
+
+  Object.keys(fields).forEach(function (key) {
+    var val = fields[key]
+
+    if (val !== null && typeof val === 'object') {
+      if(isNvField(val)) {
+        val = val.name
+      } else {
+        val = replaceNvFieldsWithNames(fields[key])
+      }
+    }
+
+    out[key] = val
+  })
+
+  return out
+
+  function isNvField(field) {
+    return Object.keys(field).length === 2 && field.name !== undefined && field.value !== undefined
+  }
 }
