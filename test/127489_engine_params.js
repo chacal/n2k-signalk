@@ -1,13 +1,14 @@
+var NV = require('./util/nv_input_test')
 var chai = require('chai')
 chai.Should()
 chai.use(require('chai-things'))
 chai.use(require('signalk-schema').chaiModule)
 
-describe('127489 engine parameters Port', function () {
+describe('127489 engine parameters Port', NV.test(function (nv) {
   it('complete engine params sentence converts', function () {
     var tree = require('../n2kMapper.js').toNested(
       JSON.parse(
-        '{"timestamp":"2015-01-15-16:25:14.952Z","prio":"2","src":"17","dst":"255","pgn":"127489",	"description":"Engine Parameters, Dynamic","fields":{"Engine Instance":"Single Engine or Dual Engine Port","Temperature":"29.85","Alternator Potential":"12.60","Fuel Rate":"0.4","Total Engine hours":"309960","Discrete Status 1":"0","Discrete Status 2":"0","Percent Engine Load": 20,"Percent Engine Torque":57,"Oil pressure":80}}'
+        `{"timestamp":"2015-01-15-16:25:14.952Z","prio":"2","src":"17","dst":"255","pgn":"127489",	"description":"Engine Parameters, Dynamic","fields":{"Engine Instance":${NV.F(nv, "Single Engine or Dual Engine Port", 0)},"Temperature":"29.85","Alternator Potential":"12.60","Fuel Rate":"0.4","Total Engine hours":"309960","Discrete Status 1":"0","Discrete Status 2":"0","Percent Engine Load": 20,"Percent Engine Torque":57,"Oil pressure":80}}`
       )
     )
     tree.should.have.nested.property('propulsion.port.temperature')
@@ -30,13 +31,13 @@ describe('127489 engine parameters Port', function () {
     tree.should.have.nested.property('propulsion.port.engineTorque.value', 0.57)
     tree.should.be.validSignalKVesselIgnoringIdentity
   })
-})
+}))
 
-describe('127489 engine parameters Starboard', function () {
+describe('127489 engine parameters Starboard', NV.test(function (nv) {
   it('complete engine params sentence converts', function () {
     var tree = require('../n2kMapper.js').toNested(
       JSON.parse(
-        '{"timestamp":"2015-01-15-16:25:14.952Z","prio":"2","src":"17","dst":"255","pgn":"127489","description":"Engine Parameters, Dynamic","fields":{"Engine Instance":"Dual Engine Starboard","Temperature":"29.85","Alternator Potential":"12.60","Fuel Rate":"0.1","Total Engine hours":"309960","Discrete Status 1":"0","Discrete Status 2":"0","Percent Engine Load": 20,"Percent Engine Torque": 57,"Oil pressure":80}}'
+        `{"timestamp":"2015-01-15-16:25:14.952Z","prio":"2","src":"17","dst":"255","pgn":"127489","description":"Engine Parameters, Dynamic","fields":{"Engine Instance":${NV.F(nv, "Dual Engine Starboard", 1)},"Temperature":"29.85","Alternator Potential":"12.60","Fuel Rate":"0.1","Total Engine hours":"309960","Discrete Status 1":"0","Discrete Status 2":"0","Percent Engine Load": 20,"Percent Engine Torque": 57,"Oil pressure":80}}`
       )
     )
     tree.should.have.nested.property('propulsion.starboard.temperature')
@@ -74,4 +75,4 @@ describe('127489 engine parameters Starboard', function () {
     )
     tree.should.be.validSignalKVesselIgnoringIdentity
   })
-})
+}))
